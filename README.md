@@ -6,6 +6,6 @@ A full-fledged DevOps repo containing scripts and tools related to latest automa
 
 Scripts and tools will be updated in this repo on a regular basis, related to Terraform, Ansible, Docker, Kubernetes and many more.
 
-If you have anything you'd like to add or improve upon, please do reach out to me if you'd like to contribute.
-
 Enjoy the tools and hope they'll be of good use to you. I'll strive to improve the scripts I have in place to ensure I'm following the best practices.
+
+If you have anything you'd like to add or improve upon, please do reach out to me if you'd like to contribute.
