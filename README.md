@@ -9,3 +9,9 @@ Scripts and tools will be updated in this repo on a regular basis, related to Te
 Enjoy the tools and hope they'll be of good use to you. I'll strive to improve the scripts I have in place to ensure I'm following the best practices.
 
 If you have anything you'd like to add or improve upon, please do reach out to me if you'd like to contribute.
+
+
+## Links
+
+- [DevOps Roadmap](https://roadmap.sh/devops)
+- [What is DevOps?](https://aws.amazon.com/devops/what-is-devops/)
