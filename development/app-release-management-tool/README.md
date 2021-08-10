@@ -1,6 +1,8 @@
 # app-release-management-tool
 aka ARM tool
 
+Thanks to the Semver utility tool provided by [François Saint-Jacques](https://github.com/fsaintjacques/semver-tool), I was able to extend the utility script to build a tool that automates app release management for mobile applications (iOS and Android).
+
 ## Pre-requisites
 1. Install fastlane - `brew install fastlane` (Visit `fastlane/README.md` folder for more info)
 2. Ensure you copy the `app-release-management-tool` into your mobile application folder where your iOS and Android application folder resides. Else you would need to modify the fastlane and bash script according to your needs.
