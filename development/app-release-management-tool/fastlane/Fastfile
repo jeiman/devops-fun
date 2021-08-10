@@ -1,0 +1,74 @@
+def setup_apple_api_key()
+  sh "if [ -d \"appstoreapi\" ]; then echo 'folder exist, executing next step'; else git clone #{ENV['APPSTORE_API_GIT_URL']} appstoreapi; fi"
+  app_store_connect_api_key(
+    key_id: ENV['APPSTORE_KEY_ID'],
+    issuer_id: ENV['APPSTORE_ISSUER_ID'],
+    key_filepath: Dir.pwd + "/appstoreapi/AuthKey_xxx.p8",
+  )
+end
+
+def setup_google_api_key()
+  sh "if [ -d \"keystore\" ]; then echo 'folder exist, executing next step'; else git clone #{ENV['KEYSTORE_GIT_URL']} keystore; fi"
+end
+
+# Download and Setup API Keys for Apple and Google
+before_all do
+  setup_apple_api_key()
+  setup_google_api_key()
+end
+
+def bump_app_version(semvertype, version)
+  puts "Bumping for #{semvertype}"
+  manipulate_version_bumping = sh "../semver.sh bump #{semvertype} #{version}"
+  puts "Old Version is: #{version}"
+  puts "New Version is: #{manipulate_version_bumping}"
+  confirm_version_bump = [(print "ℹ️ Confirm version bump from #{version} to #{manipulate_version_bumping}? Y/n? 🚀 "), gets.rstrip][1]
+
+  if confirm_version_bump == 'yes' || confirm_version_bump == 'Yes' || confirm_version_bump == 'Y' || confirm_version_bump == 'y'
+    sh "../bump-version.sh #{manipulate_version_bumping}"
+  else
+    puts "Operation canceled! ❌"
+  end
+end
+
+desc "Fetch latest Testflight Build Number"
+  private_lane :fetch_latest_testflight_build_number do
+    latest_testflight_build_number(
+      app_identifier: ENV['IOS_APP_IDENTIFIER']
+    )
+    apple_version = lane_context[SharedValues::LATEST_TESTFLIGHT_VERSION]
+  end
+
+desc "Fetch latest version code from Google Play Store"
+  private_lane :fetch_latest_google_app_version do
+    version = google_play_track_release_names(
+      track: "internal",
+      package_name: ENV['ANDROID_APP_IDENTIFIER'],
+      json_key: Dir.pwd + "/keystore/google-play-service-account.json"
+    )
+    versions = version
+  end
+
+
+desc "App Release Management aka PAARM"
+lane :release_management do
+  puts "Welcome to App Release Management or ARM for short! 🚀"
+
+  ios_version = fetch_latest_testflight_build_number()
+  android_version = fetch_latest_google_app_version()[0]
+
+  puts "🍎 iOS Version: #{ios_version}"
+  puts "🤖 Android Version: #{android_version}"
+
+  if ios_version == android_version
+    puts "Version match from respective play stores. Selecting one of them."
+    selected_version = ios_version
+    semver_type = [(print "📦 Choose semver option! You want to bump the major, minor or patch?\nType in the value of either 'major', 'minor' or 'patch' 🚀 "), gets.rstrip][1]
+    bump_app_version(semver_type, selected_version)
+  else
+    # TODO: Write the functionality to allow user to enter their version
+    puts "Oops, App Store versions do not match, please run the manual script"
+    # manual_entered_version = [(print "📦 Type in your own version' 🚀 "), gets.rstrip][1]
+    # sh "../bump-version-manual.sh #{manual_entered_version}"
+  end
+end
